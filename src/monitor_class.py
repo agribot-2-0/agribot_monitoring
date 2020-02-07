@@ -10,10 +10,18 @@ class Monitor:
 
     def initialize_connection_with_firestore(self, certificate_file):
         cred = credentials.Certificate(certificate_file)
-        firebase_admin.initialize_app(cred, {
-            'projectID' : 'agribot-cd437', 
-        })
-        self.db = firestore.client()
+        try:
+            firebase_admin.initialize_app(cred, {
+                'projectID' : 'agrsibot-cd437', 
+            })
+        except:
+            return False
+
+        try:
+            self.db = firestore.client()
+        except:
+            return False
+        
         return True
 
     def read_from_db(self, collection_name):
@@ -22,7 +30,7 @@ class Monitor:
         for doc in docs:
             print (u'{} => {}'.format(doc.id, doc.to_dict()))
 
-    def write_to_df(self, collection_name, document_name, object):
+    def write_to_db(self, collection_name, document_name, object):
         if object!=None:
             doc_ref = self.db.collection(collection_name).document(document_name)
             doc_ref.set(object)

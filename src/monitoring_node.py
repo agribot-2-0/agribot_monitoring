@@ -30,7 +30,7 @@ def node():
     rospy.Subscriber("agribot/gnss", NavSatFix, get_position_data)
     rate = rospy.Rate(5)
     while not rospy.is_shutdown():
-        monitor.write_to_df(u'agribot', u'position', pos)
+        monitor.write_to_db(u'agribot', u'position', pos)
         rate.sleep()
 
 if __name__ == '__main__':
