@@ -1,0 +1,3 @@
+<launch>
+    <node name="agribot_monitoring" pkg="agribot_monitoring" type="monitoring_node.py"/>
+</launch>
