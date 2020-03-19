@@ -2,13 +2,21 @@ image: docker:git
 
 pipelines:
   default:
-     - step:
-         services:
-           - docker
-         script:
-           - apk add --update bash coreutils tar
-           - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci .industrial_ci
-           - .industrial_ci/bitbucket.sh ROS_DISTRO=melodic
+    - step:
+        name: "Check pylint"
+        script:
+          - apk add --update bash coreutils tar python py-pip
+          - pip install pylint
+          - git clone https://github.com/panpawelchmiel/agribot_common.git
+          - pylint --rcfile=agribot_common/pylint_conf/.pylintrc scripts/*
+    - step:
+        name: "ROS Build"
+        services:
+          - docker
+        script:
+          - apk add --update bash coreutils tar
+          - git clone --quiet --depth 1 https://github.com/ros-industrial/industrial_ci .industrial_ci
+          - .industrial_ci/bitbucket.sh ROS_DISTRO=melodic
 
 definitions:
   services:

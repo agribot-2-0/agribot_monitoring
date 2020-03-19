@@ -12,7 +12,7 @@ class Monitor:
         cred = credentials.Certificate(certificate_file)
         try:
             firebase_admin.initialize_app(cred, {
-                'projectID' : 'agrsibot-cd437', 
+                'projectID' : 'agrsibot-cd437',
             })
         except:
             return False
@@ -21,7 +21,7 @@ class Monitor:
             self.db = firestore.client()
         except:
             return False
-        
+
         return True
 
     def read_from_db(self, collection_name):
