@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 from os import path
 import rospy
 import rospkg
@@ -9,10 +10,19 @@ POSITION = None
 
 def get_position_data(pos_data):
     global POSITION
-    POSITION = dict(latitude=pos_data.latitude, longitude=pos_data.longitude)
+    POSITION = dict(latitude = pos_data.latitude,
+                    longitude = pos_data.longitude,
+                    altitude = pos_data.altitude)
 
 def node():
+
     rospy.init_node('monitoring_node')
+    if len(sys.argv) < 2:
+        rospy.logerr("[Monitoring node] UID not specified.")
+        return
+
+    uid = sys.argv[1]
+
     # init path handling object:
     rospack = rospkg.RosPack()
     key_path = rospack.get_path('agribot_monitoring') + "/key/"
@@ -30,7 +40,7 @@ def node():
     rospy.Subscriber("agribot/gnss", NavSatFix, get_position_data)
     rate = rospy.Rate(5)
     while not rospy.is_shutdown():
-        monitor.write_to_db(u'agribot', u'position', POSITION)
+        monitor.write_to_db(uid, u'gnss', POSITION)
         rate.sleep()
 
 if __name__ == '__main__':
