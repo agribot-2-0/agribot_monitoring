@@ -10,9 +10,9 @@ POSITION = None
 
 def get_position_data(pos_data):
     global POSITION
-    POSITION = dict(latitude = pos_data.latitude,
-                    longitude = pos_data.longitude,
-                    altitude = pos_data.altitude)
+    POSITION = dict(latitude=pos_data.latitude,
+                    longitude=pos_data.longitude,
+                    altitude=pos_data.altitude)
 
 def node():
 
