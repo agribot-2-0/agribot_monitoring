@@ -38,7 +38,7 @@ def node():
         return
 
     rospy.Subscriber("agribot/gnss", NavSatFix, get_position_data)
-    rate = rospy.Rate(5)
+    rate = rospy.Rate(0.1)
     while not rospy.is_shutdown():
         monitor.write_to_db(uid, u'gnss', POSITION)
         rate.sleep()
