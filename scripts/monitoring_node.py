@@ -3,6 +3,7 @@ import sys
 from os import path
 import rospy
 import rospkg
+from google.api_core import exceptions
 from sensor_msgs.msg import NavSatFix
 from monitor_class import Monitor
 
@@ -40,7 +41,11 @@ def node():
     rospy.Subscriber("agribot/gnss", NavSatFix, get_position_data)
     rate = rospy.Rate(0.1)
     while not rospy.is_shutdown():
-        monitor.write_to_db(uid, u'gnss', POSITION)
+        try:
+            monitor.write_to_db(uid, u'gnss', POSITION)
+        except exceptions.ResourceExhausted as my_except:
+            rospy.logerr("[Monitoring node] Exeption: %s" %(my_except))
+            break
         rate.sleep()
 
 if __name__ == '__main__':
