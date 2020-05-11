@@ -1,11 +1,11 @@
 <launch>
 
-    <arg name="uid" default="xhMK5aMLSZOo5rsS67xlTw9dg5o1" />
+    <arg name="rsn" default="ADI75R1" />
 
     <node name="agribot_monitoring"
       pkg="agribot_monitoring"
       type="monitoring_node.py"
-      args="$(arg uid)"
+      args="$(arg rsn)"
       output="screen"
     />
 
