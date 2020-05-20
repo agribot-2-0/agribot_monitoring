@@ -5,8 +5,9 @@ from firebase_admin import firestore
 #this class will monitor vital
 class Monitor(object):
     #database
-    def __init__(self):
+    def __init__(self, rsn):
         self.database = None
+        self.rsn = rsn
         return
 
     def initialize_connection_with_firestore(self, certificate_file):
@@ -23,7 +24,8 @@ class Monitor(object):
         for doc in docs:
             print u'{} => {}'.format(doc.id, doc.to_dict())
 
-    def write_to_db(self, collection_name, document_name, obj):
+    def write_pose_to_db(self, obj):
         if obj != None:
-            doc_ref = self.database.collection(collection_name).document(document_name)
+            doc_ref = self.database.collection('robots').document(self.rsn)
+            doc_ref = doc_ref.collection(u'localization').document(u'pose')
             doc_ref.set(obj)
