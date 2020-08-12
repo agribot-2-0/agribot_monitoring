@@ -29,3 +29,9 @@ class Monitor(object):
             doc_ref = self.database.collection('robots').document(self.rsn)
             doc_ref = doc_ref.collection(u'localization').document(u'pose')
             doc_ref.set(obj)
+
+    def write_orientation_to_db(self, obj):
+        if obj != None:
+            doc_ref = self.database.collection('robots').document(self.rsn)
+            doc_ref = doc_ref.collection(u'localization').document(u'orientation')
+            doc_ref.set(obj)
