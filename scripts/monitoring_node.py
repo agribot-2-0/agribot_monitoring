@@ -4,11 +4,14 @@ from os import path
 import datetime
 import rospy
 import rospkg
+from tf.transformations import euler_from_quaternion
+
 from google.api_core import exceptions
-from sensor_msgs.msg import NavSatFix
+from sensor_msgs.msg import NavSatFix, Imu
 from monitor_class import Monitor
 
 POSITION = None
+ORIENTATION = None
 
 def get_position_data(pos_data):
     global POSITION
@@ -16,6 +19,16 @@ def get_position_data(pos_data):
         'latitude' : pos_data.latitude,
         'longitude' : pos_data.longitude,
         'altitude' : pos_data.altitude,
+        'timestamp' : datetime.datetime.now()
+    }
+
+def get_heading(imu_data):
+    global ORIENTATION
+    orientation_q = imu_data.orientation
+    orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w]
+    euler = euler_from_quaternion(orientation_list)
+    ORIENTATION = {
+        'heading' : euler[2],
         'timestamp' : datetime.datetime.now()
     }
 
@@ -43,10 +56,13 @@ def node():
         return
 
     rospy.Subscriber("agribot/gnss", NavSatFix, get_position_data)
+    rospy.Subscriber("agribot/heading", Imu, get_heading)
+
     rate = rospy.Rate(0.1)
     while not rospy.is_shutdown():
         try:
             monitor.write_pose_to_db(POSITION)
+            monitor.write_orientation_to_db(ORIENTATION)
         except exceptions.ResourceExhausted as my_except:
             rospy.logerr("[Monitoring node] Exeption: %s" %(my_except))
             break
