@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import sys
 from os import path
+import math
 import datetime
 import rospy
 import rospkg
@@ -11,26 +12,30 @@ from sensor_msgs.msg import NavSatFix, Imu
 from monitor_class import Monitor
 
 POSITION = None
-ORIENTATION = None
+HEADING = 0.0
+
 
 def get_position_data(pos_data):
     global POSITION
     POSITION = {
-        'latitude' : pos_data.latitude,
-        'longitude' : pos_data.longitude,
-        'altitude' : pos_data.altitude,
-        'timestamp' : datetime.datetime.now()
+        'latitude': pos_data.latitude,
+        'longitude': pos_data.longitude,
+        'altitude': pos_data.altitude,
+        'heading': HEADING,
+        'timestamp': datetime.datetime.now()
     }
 
+
 def get_heading(imu_data):
-    global ORIENTATION
+    global HEADING
     orientation_q = imu_data.orientation
-    orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w]
+    orientation_list = [
+        orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w
+    ]
     euler = euler_from_quaternion(orientation_list)
-    ORIENTATION = {
-        'heading' : euler[2],
-        'timestamp' : datetime.datetime.now()
-    }
+
+    HEADING = math.degrees(euler[2])
+
 
 def node():
 
@@ -49,10 +54,12 @@ def node():
         return
 
     monitor = Monitor(rsn)
-    ret = monitor.initialize_connection_with_firestore(key_path + "agribot-cd437-" +
-                                                       "firebase-adminsdk-ypr8o-5e1109055d.json")
+    ret = monitor.initialize_connection_with_firestore(
+        key_path + "agribot-cd437-" +
+        "firebase-adminsdk-ypr8o-5e1109055d.json")
     if not ret:
-        rospy.logerr("[Monitoring node] Bucket does not exist. Initialization failed.")
+        rospy.logerr(
+            "[Monitoring node] Bucket does not exist. Initialization failed.")
         return
 
     rospy.Subscriber("agribot/gnss", NavSatFix, get_position_data)
@@ -62,11 +69,11 @@ def node():
     while not rospy.is_shutdown():
         try:
             monitor.write_pose_to_db(POSITION)
-            monitor.write_orientation_to_db(ORIENTATION)
         except exceptions.ResourceExhausted as my_except:
-            rospy.logerr("[Monitoring node] Exeption: %s" %(my_except))
+            rospy.logerr("[Monitoring node] Exeption: %s" % (my_except))
             break
         rate.sleep()
+
 
 if __name__ == '__main__':
     try:
