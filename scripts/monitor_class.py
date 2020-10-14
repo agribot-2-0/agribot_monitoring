@@ -9,7 +9,6 @@ class Monitor(object):
     def __init__(self, rsn):
         self.database = None
         self.rsn = rsn
-        return
 
     def initialize_connection_with_firestore(self, certificate_file):
         cred = credentials.Certificate(certificate_file)
@@ -19,48 +18,8 @@ class Monitor(object):
         self.database = firestore.client()
         return True
 
-    def read_from_db(self, collection_name):
-        agri_ref = self.database.collection(collection_name)
-        docs = agri_ref.stream()
-        for doc in docs:
-            print u'{} => {}'.format(doc.id, doc.to_dict())
-
-    def write_pose_to_db(self, obj):
-        if obj != None:
-            doc_ref = self.database.collection('robots').document(self.rsn)
-            doc_ref = doc_ref.collection(u'localization').document(u'pose')
-            doc_ref.set(obj)
-
-    def write_orientation_to_db(self, obj):
-        if obj != None:
-            doc_ref = self.database.collection('robots').document(self.rsn)
-            doc_ref = doc_ref.collection(u'localization').document(
-                u'orientation')
-            doc_ref.set(obj)
-
-    def write_temperature_to_db(self, obj):
-        if obj != None:
-            doc_ref = self.database.collection('robots').document(self.rsn)
-            doc_ref = doc_ref.collection(u'weather_station').document(
-                u'temperature')
-            doc_ref.set(obj)
-
-    def write_humidity_to_db(self, obj):
-        if obj != None:
-            doc_ref = self.database.collection('robots').document(self.rsn)
-            doc_ref = doc_ref.collection(u'weather_station').document(
-                u'humidity')
-            doc_ref.set(obj)
-
-    def write_pressure_to_db(self, obj):
-        if obj != None:
-            doc_ref = self.database.collection('robots').document(self.rsn)
-            doc_ref = doc_ref.collection(u'weather_station').document(
-                u'pressure')
-            doc_ref.set(obj)
-
-    def write_wind_to_db(self, obj):
-        if obj != None:
-            doc_ref = self.database.collection('robots').document(self.rsn)
-            doc_ref = doc_ref.collection(u'weather_station').document(u'wind')
+    def write_to_db(self, path, obj):
+        if obj is not None:
+            path = 'robots/' + self.rsn + '/' + path
+            doc_ref = self.database.document(path)
             doc_ref.set(obj)
