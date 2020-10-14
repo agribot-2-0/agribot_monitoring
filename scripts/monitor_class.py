@@ -13,7 +13,7 @@ class Monitor(object):
     def initialize_connection_with_firestore(self, certificate_file):
         cred = credentials.Certificate(certificate_file)
         firebase_admin.initialize_app(cred, {
-            'projectID': 'agrsibot-cd437',
+            'projectID': 'agribot-cd437',
         })
         self.database = firestore.client()
         return True

@@ -22,6 +22,6 @@ catkin_install_python(PROGRAMS
    scripts/monitor_class.py
    scripts/firebase_data_models.py
    scripts/subscribers_callbacks.py
-   scripts/ros_messgages.py
+   scripts/ros_messages.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

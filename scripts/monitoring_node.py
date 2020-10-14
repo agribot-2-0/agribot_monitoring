@@ -7,7 +7,7 @@ import yaml
 from google.api_core import exceptions
 from firebase_data_models import FIREBASE_DATA_MODELS
 import subscribers_callbacks
-import ros_messgages
+import ros_messages
 from monitor_class import Monitor
 
 
@@ -45,7 +45,7 @@ def node():
     for topic_name, item in config['subscribers'].items():
         try:
             rospy.Subscriber(
-                topic_name, getattr(ros_messgages, item['ros_msg_type']),
+                topic_name, getattr(ros_messages, item['ros_msg_type']),
                 getattr(subscribers_callbacks, item['ros_callback_name']))
         except AttributeError as my_except:
             rospy.logerr(

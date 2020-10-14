@@ -1,6 +1,6 @@
 subscribers:
   weather_station/temperature:  # this is the ros topic name to subscribe
-    ros_msg_type: Temperature  # the messgage must be imported in ros_messgages.py
+    ros_msg_type: Temperature  # the message must be imported in ros_messages.py
     ros_callback_name: get_temperature  # the callback must be declared in subscibers_callback.py 
   agribot/gnss:
     ros_msg_type: NavSatFix
