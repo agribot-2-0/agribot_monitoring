@@ -1,40 +1,14 @@
 #!/usr/bin/env python
 import sys
 from os import path
-import math
-import datetime
 import rospy
 import rospkg
-from tf.transformations import euler_from_quaternion
-
+import yaml
 from google.api_core import exceptions
-from sensor_msgs.msg import NavSatFix, Imu
+from firebase_data_models import FIREBASE_DATA_MODELS
+import subscribers_callbacks
+import ros_messages
 from monitor_class import Monitor
-
-POSITION = {
-    'latitude': 0.0,
-    'longitude': 0.0,
-    'altitude': 0.0,
-    'heading': 0.0,
-    'timestamp': datetime.datetime.now()
-}
-
-
-def get_position_data(pos_data):
-    POSITION['latitude'] = pos_data.latitude
-    POSITION['longitude'] = pos_data.longitude
-    POSITION['altitude'] = pos_data.altitude
-    POSITION['timestamp'] = datetime.datetime.now()
-
-
-def get_heading(imu_data):
-    orientation_q = imu_data.orientation
-    orientation_list = [
-        orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w
-    ]
-    euler = euler_from_quaternion(orientation_list)
-
-    POSITION['heading'] = math.degrees(euler[2])
 
 
 def node():
@@ -62,19 +36,37 @@ def node():
             "[Monitoring node] Bucket does not exist. Initialization failed.")
         return
 
-    rospy.Subscriber("agribot/gnss", NavSatFix, get_position_data)
-    rospy.Subscriber("agribot/heading", Imu, get_heading)
+    configs_location = path.join(rospack.get_path('agribot_monitoring'),
+                                 "configs")
+
+    config = yaml.load(
+        open(path.join(configs_location, 'monitoring_node.yaml')))
+
+    for topic_name, item in config['subscribers'].items():
+        try:
+            rospy.Subscriber(
+                topic_name, getattr(ros_messages, item['ros_msg_type']),
+                getattr(subscribers_callbacks, item['ros_callback_name']))
+        except AttributeError as my_except:
+            rospy.logerr(
+                "YAML config file is wrongly formated: {}".format(my_except))
+            return
 
     rate = rospy.Rate(0.1)
 
-    rospy.wait_for_message('/agribot/gnss', NavSatFix)
-
     while not rospy.is_shutdown():
         try:
-            monitor.write_pose_to_db(POSITION)
+            for firebase_location, item in config['firebase_locations'].items(
+            ):
+                monitor.write_to_db(str(firebase_location),
+                                    FIREBASE_DATA_MODELS[item['data_model']])
         except exceptions.ResourceExhausted as my_except:
             rospy.logerr("[Monitoring node] Exeption: {}".format(my_except))
-            break
+            return
+        except KeyError as my_except:
+            rospy.logerr(
+                "YAML config file is wrongly formated: {}".format(my_except))
+            return
         rate.sleep()
 
 

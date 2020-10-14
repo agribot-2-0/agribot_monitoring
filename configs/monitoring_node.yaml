@@ -1,0 +1,32 @@
+subscribers:
+  weather_station/temperature:  # this is the ros topic name to subscribe
+    ros_msg_type: Temperature  # the message must be imported in ros_messages.py
+    ros_callback_name: get_temperature  # the callback must be declared in subscibers_callback.py 
+  agribot/gnss:
+    ros_msg_type: NavSatFix
+    ros_callback_name: get_position_data
+  agribot/heading:
+    ros_msg_type: Imu
+    ros_callback_name: get_heading
+  weather_station/humidity:
+    ros_msg_type: RelativeHumidity
+    ros_callback_name: get_humidity
+  weather_station/atmospheric_pressure:
+    ros_msg_type: FluidPressure
+    ros_callback_name: get_pressure
+  weather_station/wind_speed:
+    ros_msg_type: AgribotWind
+    ros_callback_name: get_wind
+    
+  
+firebase_locations: 
+  localization/pose:  # this is the firebase location to send data
+    data_model: pose_data_model  #the data_model must be declared in firebase_data_models.py
+  weather_station/temperature:  
+    data_model: temperature_data_model 
+  weather_station/humidity:  
+    data_model: humidity_data_model 
+  weather_station/pressure:  
+    data_model: pressure_data_model 
+  weather_station/wind:  
+    data_model: wind_data_model 

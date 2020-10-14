@@ -12,7 +12,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-install(DIRECTORY launch key
+install(DIRECTORY launch key configs
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   PATTERN ".svn" EXCLUDE
 )
@@ -20,5 +20,8 @@ install(DIRECTORY launch key
 catkin_install_python(PROGRAMS
    scripts/monitoring_node.py
    scripts/monitor_class.py
+   scripts/firebase_data_models.py
+   scripts/subscribers_callbacks.py
+   scripts/ros_messages.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
