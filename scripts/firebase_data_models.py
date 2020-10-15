@@ -27,5 +27,8 @@ FIREBASE_DATA_MODELS = {
         'speed_value': 0.0,
         'speed_accuracy': 0.0,
         'timestamp': datetime.datetime.now()
+    },
+    "current_task_model": {
+        'progress': 0
     }
 }
