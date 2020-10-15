@@ -17,7 +17,10 @@ subscribers:
   weather_station/wind_speed:
     ros_msg_type: AgribotWind
     ros_callback_name: get_wind
-    
+  agribot/move_base_monitor/result:
+    ros_msg_type: AgribotMoveBaseMonitorResult
+    ros_callback_name: current_task_progress
+
   
 firebase_locations: 
   localization/pose:  # this is the firebase location to send data
@@ -28,5 +31,5 @@ firebase_locations:
     data_model: humidity_data_model 
   weather_station/pressure:  
     data_model: pressure_data_model 
-  weather_station/wind:  
-    data_model: wind_data_model 
+  state/task:
+    data_model: current_task_model
