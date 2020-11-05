@@ -2,7 +2,7 @@ import datetime
 import math
 from tf.transformations import euler_from_quaternion
 from firebase_data_models import FIREBASE_DATA_MODELS
-from agribot_msgs.msg import AgribotMoveBaseMonitorResult
+from agribot_msgs.msg import AgribotMoveBaseMonitorResult, AgribotEngineErrorData
 
 
 def get_position_data(pos_data):
@@ -66,3 +66,74 @@ def current_task_progress(data):
     else:
         FIREBASE_DATA_MODELS['current_task_model']['progress'] = int(
             data.current_waypoint * 100 / data.total_waypoints)
+
+
+def get_engine_data(data):
+    FIREBASE_DATA_MODELS['engine_data_model']['accumulator_voltage'] = round(
+        data.accumulator_voltage, 1)
+    FIREBASE_DATA_MODELS['engine_data_model'][
+        'fuel_temperature'] = data.fuel_temperature
+    FIREBASE_DATA_MODELS['engine_data_model']['fuel_level'] = data.fuel_level
+    FIREBASE_DATA_MODELS['engine_data_model']['fuel_rate'] = data.fuel_rate
+    FIREBASE_DATA_MODELS['engine_data_model'][
+        'torque_of_engine'] = data.torque_of_engine
+    FIREBASE_DATA_MODELS['engine_data_model']['rpm'] = data.rpm
+    FIREBASE_DATA_MODELS['engine_data_model'][
+        'timestamp'] = datetime.datetime.now()
+
+
+def get_engine_error(data):
+    FIREBASE_DATA_MODELS['engine_data_model'][
+        'error_state'] = engine_state_to_string(data.error_state)
+    FIREBASE_DATA_MODELS['engine_data_model'][
+        'engine_protection_lamp'] = engine_lamp_to_string(
+            data.engine_protection_lamp)
+    FIREBASE_DATA_MODELS['engine_data_model'][
+        'engine_warning_lamp'] = engine_lamp_to_string(
+            data.engine_warning_lamp)
+    FIREBASE_DATA_MODELS['engine_data_model'][
+        'engine_stop_lamp'] = engine_lamp_to_string(data.engine_stop_lamp)
+    FIREBASE_DATA_MODELS['engine_data_model']['occ'] = data.occ
+    FIREBASE_DATA_MODELS['engine_data_model']['spn'] = data.spn
+    FIREBASE_DATA_MODELS['engine_data_model']['fmi'] = data.fmi
+    FIREBASE_DATA_MODELS['engine_data_model'][
+        'error_number'] = data.error_number
+    FIREBASE_DATA_MODELS['engine_data_model'][
+        'error_total_count'] = data.error_total_count
+
+
+def engine_state_to_string(error_state):
+    return {
+        AgribotEngineErrorData.ERROR_ACTIVE: u"Error active",
+        AgribotEngineErrorData.ERROR_PASSIVE: u"Error passive"
+    }[error_state]
+
+
+def engine_lamp_to_string(engine_lamp):
+    return {
+        AgribotEngineErrorData.LAMP_OFF: u"Lamp off",
+        AgribotEngineErrorData.LAMP_ON: u"Lamp on",
+        AgribotEngineErrorData.LAMP_1HZ: u"Lamp flashing 1Hz",
+        AgribotEngineErrorData.LAMP_2HZ: u"Lamp flashing 2Hz"
+    }[engine_lamp]
+
+
+def get_hydraulics(data):
+    FIREBASE_DATA_MODELS['hydraulics_data_model'][
+        'oil_pressure_track_FL'] = data.oil_pressure_track_FL
+    FIREBASE_DATA_MODELS['hydraulics_data_model'][
+        'oil_pressure_track_FR'] = data.oil_pressure_track_FR
+    FIREBASE_DATA_MODELS['hydraulics_data_model'][
+        'oil_pressure_track_BL'] = data.oil_pressure_track_BL
+    FIREBASE_DATA_MODELS['hydraulics_data_model'][
+        'oil_pressure_track_BR'] = data.oil_pressure_track_BR
+    FIREBASE_DATA_MODELS['hydraulics_data_model'][
+        'oil_pressure_manifold_F'] = data.oil_pressure_manifold_F
+    FIREBASE_DATA_MODELS['hydraulics_data_model'][
+        'oil_pressure_manifold_B'] = data.oil_pressure_manifold_B
+    FIREBASE_DATA_MODELS['hydraulics_data_model'][
+        'oil_cooler_temperature'] = data.oil_cooler_temperature
+    FIREBASE_DATA_MODELS['hydraulics_data_model'][
+        'oil_tank_temperature'] = data.oil_tank_temperature
+    FIREBASE_DATA_MODELS['hydraulics_data_model'][
+        'timestamp'] = datetime.datetime.now()
