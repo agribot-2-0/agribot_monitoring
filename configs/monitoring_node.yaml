@@ -39,6 +39,8 @@ firebase_locations:
     data_model: humidity_data_model 
   weather_station/pressure:  
     data_model: pressure_data_model 
+  weather_station/wind:
+    data_model: wind_data_model
   state/task:
     data_model: current_task_model
   state/engine:
