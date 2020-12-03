@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import sys
 from os import path
 import rospy
 import rospkg
@@ -12,13 +11,12 @@ from monitor_class import Monitor
 
 
 def node():
-
-    rospy.init_node('monitoring_node')
-    if len(sys.argv) < 2:
-        rospy.logerr("[Monitoring node] UID not specified.")
+    rospy.init_node('agribot_monitoring')
+    if not rospy.has_param('rsn'):
+        rospy.logerr("[Monitoring node] rsn param not set")
         return
 
-    rsn = sys.argv[1]
+    rsn = rospy.get_param('rsn')
 
     # init path handling object:
     rospack = rospkg.RosPack()

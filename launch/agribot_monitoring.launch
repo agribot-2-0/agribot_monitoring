@@ -1,8 +1,8 @@
 <launch>
-
-  <arg name="rsn" default="ADI75R1" />
   <arg name="monitoring" default="true" />
 
-  <node if="$(arg monitoring)" name="agribot_monitoring" pkg="agribot_monitoring" type="monitoring_node.py" args="$(arg rsn)" output="screen" />
+  <rosparam command="load" file="$(find agribot_common)/config/bringup/robot.yaml" />
+
+  <node if="$(arg monitoring)" name="agribot_monitoring" pkg="agribot_monitoring" type="monitoring_node.py" output="screen" />
 
 </launch>
