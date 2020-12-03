@@ -2,6 +2,7 @@
   <arg name="monitoring" default="true" />
 
   <rosparam command="load" file="$(find agribot_common)/config/bringup/robot.yaml" />
+  <rosparam command="load" file="$(find agribot_common)/config/bringup/firebase.yaml" />
 
   <node if="$(arg monitoring)" name="agribot_monitoring" pkg="agribot_monitoring" type="monitoring_node.py" output="screen" />
 

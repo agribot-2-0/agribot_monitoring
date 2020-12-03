@@ -10,25 +10,40 @@ import ros_messages
 from monitor_class import Monitor
 
 
+def if_param_exists(param_name):
+    if not rospy.has_param(param_name):
+        rospy.logerr("[Monitoring node] '{}' param not set".format(param_name))
+        return False
+    return True
+
+
 def node():
     rospy.init_node('agribot_monitoring')
-    if not rospy.has_param('rsn'):
-        rospy.logerr("[Monitoring node] rsn param not set")
+    if if_param_exists('rsn'):
+        rsn = rospy.get_param('rsn')
+    else:
         return
 
-    rsn = rospy.get_param('rsn')
+    if if_param_exists('certificate_repo'):
+        certificate_repo = rospy.get_param('certificate_repo')
+    else:
+        return
+
+    if if_param_exists('certificate_file'):
+        certificate_file = rospy.get_param('certificate_file')
+    else:
+        return
 
     # init path handling object:
     rospack = rospkg.RosPack()
-    key_path = path.join(rospack.get_path('agribot_monitoring'), "key")
+    key_path = path.join(rospack.get_path(certificate_repo), "key")
     if not path.exists(key_path):
         rospy.logerr("[Monitoring node] Key folder not present.")
         return
 
     monitor = Monitor(rsn)
     ret = monitor.initialize_connection_with_firestore(
-        path.join(key_path,
-                  "agribot-cd437-firebase-adminsdk-ypr8o-5e1109055d.json"))
+        path.join(key_path, certificate_file))
     if not ret:
         rospy.logerr(
             "[Monitoring node] Bucket does not exist. Initialization failed.")
