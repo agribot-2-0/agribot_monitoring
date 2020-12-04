@@ -17,7 +17,7 @@ def if_param_exists(param_name):
     return True
 
 
-def node():
+def node():  # pylint: disable=too-many-return-statements, too-many-branches
     rospy.init_node('agribot_monitoring')
     if if_param_exists('rsn'):
         rsn = rospy.get_param('rsn')
