@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from os import path
+from os import path, environ
 import rospy
 import rospkg
 import yaml
@@ -24,8 +24,8 @@ def node():  # pylint: disable=too-many-return-statements, too-many-branches
     else:
         return
 
-    if if_param_exists('certificate_repo'):
-        certificate_repo = rospy.get_param('certificate_repo')
+    if if_param_exists('certificate_path'):
+        certificate_path = rospy.get_param('certificate_path')
     else:
         return
 
@@ -36,7 +36,8 @@ def node():  # pylint: disable=too-many-return-statements, too-many-branches
 
     # init path handling object:
     rospack = rospkg.RosPack()
-    key_path = path.join(rospack.get_path(certificate_repo), "key")
+    key_path = path.join(
+        path.join(environ.get('AGRIBOT_HOME'), certificate_path))
     if not path.exists(key_path):
         rospy.logerr("[Monitoring node] Key folder not present.")
         return
