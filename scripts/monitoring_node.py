@@ -36,8 +36,7 @@ def node():  # pylint: disable=too-many-return-statements, too-many-branches
 
     # init path handling object:
     rospack = rospkg.RosPack()
-    key_path = path.join(
-        path.join(environ.get('AGRIBOT_HOME'), certificate_path))
+    key_path = path.join(environ.get('AGRIBOT_HOME'), certificate_path)
     if not path.exists(key_path):
         rospy.logerr("[Monitoring node] Key folder not present.")
         return
