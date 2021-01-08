@@ -12,7 +12,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-install(DIRECTORY launch key configs
+install(DIRECTORY launch configs
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   PATTERN ".svn" EXCLUDE
 )

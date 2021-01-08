@@ -1,8 +1,7 @@
 <launch>
+  <rosparam command="load" file="$(env AGRIBOT_HOME)/agribot/configs/base/robot.yaml" />
+  <rosparam command="load" file="$(env AGRIBOT_HOME)/agribot/configs/base/firebase.yaml" />
 
-  <arg name="rsn" default="ADI75R1" />
-  <arg name="monitoring" default="true" />
-
-  <node if="$(arg monitoring)" name="agribot_monitoring" pkg="agribot_monitoring" type="monitoring_node.py" args="$(arg rsn)" output="screen" />
+  <node if="$(env AGRIBOT_MONITORING)" name="agribot_monitoring" pkg="agribot_monitoring" type="monitoring_node.py" output="screen" />
 
 </launch>

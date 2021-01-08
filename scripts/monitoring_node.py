@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import sys
-from os import path
+from os import path, environ
 import rospy
 import rospkg
 import yaml
@@ -11,26 +10,40 @@ import ros_messages
 from monitor_class import Monitor
 
 
-def node():
+def if_param_exists(param_name):
+    if not rospy.has_param(param_name):
+        rospy.logerr("[Monitoring node] '{}' param not set".format(param_name))
+        return False
+    return True
 
-    rospy.init_node('monitoring_node')
-    if len(sys.argv) < 2:
-        rospy.logerr("[Monitoring node] UID not specified.")
+
+def node():  # pylint: disable=too-many-return-statements, too-many-branches
+    rospy.init_node('agribot_monitoring')
+    if if_param_exists('rsn'):
+        rsn = rospy.get_param('rsn')
+    else:
         return
 
-    rsn = sys.argv[1]
+    if if_param_exists('certificate_path'):
+        certificate_path = rospy.get_param('certificate_path')
+    else:
+        return
+
+    if if_param_exists('certificate_file'):
+        certificate_file = rospy.get_param('certificate_file')
+    else:
+        return
 
     # init path handling object:
     rospack = rospkg.RosPack()
-    key_path = path.join(rospack.get_path('agribot_monitoring'), "key")
+    key_path = path.join(environ.get('AGRIBOT_HOME'), certificate_path)
     if not path.exists(key_path):
         rospy.logerr("[Monitoring node] Key folder not present.")
         return
 
     monitor = Monitor(rsn)
     ret = monitor.initialize_connection_with_firestore(
-        path.join(key_path,
-                  "agribot-cd437-firebase-adminsdk-ypr8o-5e1109055d.json"))
+        path.join(key_path, certificate_file))
     if not ret:
         rospy.logerr(
             "[Monitoring node] Bucket does not exist. Initialization failed.")
