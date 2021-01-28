@@ -13,14 +13,18 @@ def get_position_data(pos_data):
         'timestamp'] = datetime.datetime.now()
 
 
-def get_heading(imu_data):
-    orientation_q = imu_data.orientation
+def get_global_orientation(data):
+    orientation_q = data.pose.pose.orientation
     orientation_list = [
         orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w
     ]
-    euler = euler_from_quaternion(orientation_list)
+    [roll, pitch, yaw] = euler_from_quaternion(orientation_list)  #  pylint: disable=unused-variable
 
-    FIREBASE_DATA_MODELS['pose_data_model']['heading'] = math.degrees(euler[2])
+    FIREBASE_DATA_MODELS['pose_data_model']['heading'] = enu_to_neu(yaw)
+
+
+def enu_to_neu(angle_in_enu):
+    return -math.degrees(angle_in_enu - math.pi / 2)
 
 
 def get_temperature(data):
