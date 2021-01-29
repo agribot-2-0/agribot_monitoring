@@ -18,7 +18,7 @@ def get_global_orientation(data):
     orientation_list = [
         orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w
     ]
-    [roll, pitch, yaw] = euler_from_quaternion(orientation_list)  #  pylint: disable=unused-variable
+    [_, _, yaw] = euler_from_quaternion(orientation_list)
 
     FIREBASE_DATA_MODELS['pose_data_model']['heading'] = enu_to_neu(yaw)
 
