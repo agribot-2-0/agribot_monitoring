@@ -6,6 +6,7 @@ subscribers:
   agribot/gnss/filtered:
     ros_msg_type: NavSatFix
     ros_callback_name: get_position_data
+    wait_for_message: true
   agribot/odom/global:
     ros_msg_type: Odometry
     ros_callback_name: get_global_orientation

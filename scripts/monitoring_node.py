@@ -21,14 +21,14 @@ def node():  # pylint: disable=too-many-return-statements, too-many-branches
         certificate_file = get_parameter('certificate_file')
         certificate_path = get_parameter('certificate_path')
     except ValueError as exception_msg:
-        rospy.logerr("[Monitoring node] {}".format(exception_msg))
+        rospy.logerr("[Monitoring] {}".format(exception_msg))
         return
 
     # init path handling object:
     rospack = rospkg.RosPack()
     key_path = path.join(environ.get('AGRIBOT_HOME'), certificate_path)
     if not path.exists(key_path):
-        rospy.logerr("[Monitoring node] Key folder not present.")
+        rospy.logerr("[Monitoring] Key folder not present.")
         return
 
     monitor = Monitor(robot_serial_number)
@@ -36,7 +36,7 @@ def node():  # pylint: disable=too-many-return-statements, too-many-branches
         path.join(key_path, certificate_file))
     if not ret:
         rospy.logerr(
-            "[Monitoring node] Bucket does not exist. Initialization failed.")
+            "[Monitoring] Bucket does not exist. Initialization failed.")
         return
 
     configs_location = path.join(rospack.get_path('agribot_monitoring'),
@@ -55,6 +55,12 @@ def node():  # pylint: disable=too-many-return-statements, too-many-branches
                 "YAML config file is wrongly formated: {}".format(my_except))
             return
 
+    for topic_name, item in config['subscribers'].items():
+        if 'wait_for_message' in item:
+            if item['wait_for_message'] is True:
+                rospy.logwarn("[Monitoring] Waiting for message '{}'".format(topic_name))
+                rospy.wait_for_message(topic_name, getattr(ros_messages, item['ros_msg_type']))
+
     rate = rospy.Rate(0.1)
 
     while not rospy.is_shutdown():
@@ -64,7 +70,7 @@ def node():  # pylint: disable=too-many-return-statements, too-many-branches
                 monitor.write_to_db(str(firebase_location),
                                     FIREBASE_DATA_MODELS[item['data_model']])
         except exceptions.ResourceExhausted as my_except:
-            rospy.logerr("[Monitoring node] Exeption: {}".format(my_except))
+            rospy.logerr("[Monitoring] Exeption: {}".format(my_except))
             return
         except KeyError as my_except:
             rospy.logerr(
