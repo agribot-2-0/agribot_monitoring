@@ -1,10 +1,12 @@
 subscribers:
   weather_station/temperature:  # this is the ros topic name to subscribe
     ros_msg_type: Temperature  # the message must be imported in ros_messages.py
-    ros_callback_name: get_temperature  # the callback must be declared in subscibers_callback.py 
+    ros_callback_name: get_temperature  # the callback must be declared in subscibers_callback.py
+    wait_for_message: false  # if wait for message before publishing
   agribot/gnss/filtered:
     ros_msg_type: NavSatFix
     ros_callback_name: get_position_data
+    wait_for_message: true
   agribot/odom/global:
     ros_msg_type: Odometry
     ros_callback_name: get_global_orientation
