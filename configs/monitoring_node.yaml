@@ -20,7 +20,7 @@ subscribers:
     ros_msg_type: AgribotWind
     ros_callback_name: get_wind
   agribot/move_base_monitor/result:
-    ros_msg_type: AgribotMoveBaseMonitorResult
+    ros_msg_type: AgribotNavigationManagerResult
     ros_callback_name: current_task_progress
   agribot/engine_data:
     ros_msg_type: AgribotEngineData
