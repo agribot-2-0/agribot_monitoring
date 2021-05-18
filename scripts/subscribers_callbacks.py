@@ -65,7 +65,7 @@ def get_wind(data):
 
 # temporarily solution
 def current_task_progress(data):
-    if data.result == AgribotNavigationManagerResult.PATH_COMPLETED:
+    if data.result == AgribotNavigationManagerResult.COMPLETED:
         FIREBASE_DATA_MODELS['current_task_model']['progress'] = 100
     else:
         FIREBASE_DATA_MODELS['current_task_model']['progress'] = int(
