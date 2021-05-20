@@ -2,7 +2,7 @@ import datetime
 import math
 from tf.transformations import euler_from_quaternion
 from firebase_data_models import FIREBASE_DATA_MODELS
-from agribot_msgs.msg import AgribotMoveBaseMonitorResult, AgribotEngineErrorData
+from agribot_msgs.msg import AgribotNavigationManagerResult, AgribotEngineErrorData
 
 
 def get_position_data(pos_data):
@@ -65,7 +65,7 @@ def get_wind(data):
 
 # temporarily solution
 def current_task_progress(data):
-    if data.result == AgribotMoveBaseMonitorResult.PATH_COMPLETED:
+    if data.result == AgribotNavigationManagerResult.COMPLETED:
         FIREBASE_DATA_MODELS['current_task_model']['progress'] = 100
     else:
         FIREBASE_DATA_MODELS['current_task_model']['progress'] = int(
