@@ -3,12 +3,11 @@ from os import path, environ
 import rospy
 import rospkg
 import yaml
-from google.api_core import exceptions
+import google.api_core.exceptions
 from firebase_data_models import FIREBASE_DATA_MODELS
 import subscribers_callbacks
 import ros_messages
 from monitor_class import Monitor
-
 
 from agribot_common.agribot_parameters import get_parameter
 
@@ -32,27 +31,21 @@ def node():  # pylint: disable=too-many-return-statements, too-many-branches
         return
 
     monitor = Monitor(robot_serial_number)
-    ret = monitor.initialize_connection_with_firestore(
-        path.join(key_path, certificate_file))
+    ret = monitor.initialize_connection_with_firestore(path.join(key_path, certificate_file))
     if not ret:
-        rospy.logerr(
-            "[Monitoring] Bucket does not exist. Initialization failed.")
+        rospy.logerr("[Monitoring] Bucket does not exist. Initialization failed.")
         return
 
-    configs_location = path.join(rospack.get_path('agribot_monitoring'),
-                                 "configs")
+    configs_location = path.join(rospack.get_path('agribot_monitoring'), "configs")
 
-    config = yaml.load(
-        open(path.join(configs_location, 'monitoring_node.yaml')))
+    config = yaml.load(open(path.join(configs_location, 'monitoring_node.yaml')))
 
     for topic_name, item in config['subscribers'].items():
         try:
-            rospy.Subscriber(
-                topic_name, getattr(ros_messages, item['ros_msg_type']),
-                getattr(subscribers_callbacks, item['ros_callback_name']))
+            rospy.Subscriber(topic_name, getattr(ros_messages, item['ros_msg_type']),
+                             getattr(subscribers_callbacks, item['ros_callback_name']))
         except AttributeError as my_except:
-            rospy.logerr(
-                "YAML config file is wrongly formated: {}".format(my_except))
+            rospy.logerr("YAML config file is wrongly formated: {}".format(my_except))
             return
 
     for topic_name, item in config['subscribers'].items():
@@ -65,16 +58,13 @@ def node():  # pylint: disable=too-many-return-statements, too-many-branches
 
     while not rospy.is_shutdown():
         try:
-            for firebase_location, item in config['firebase_locations'].items(
-            ):
+            for firebase_location, item in config['firebase_locations'].items():
                 monitor.write_to_db(str(firebase_location),
                                     FIREBASE_DATA_MODELS[item['data_model']])
-        except exceptions.ResourceExhausted as my_except:
-            rospy.logerr("[Monitoring] Exeption: {}".format(my_except))
-            return
+        except google.api_core.exceptions.GoogleAPIError as my_except:
+            rospy.logerr("[Monitoring] Exception: {}".format(my_except))
         except KeyError as my_except:
-            rospy.logerr(
-                "YAML config file is wrongly formated: {}".format(my_except))
+            rospy.logerr("YAML config file is wrongly formated: {}".format(my_except))
             return
         rate.sleep()
 
